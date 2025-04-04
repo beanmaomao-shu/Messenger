@@ -1,0 +1,97 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+
+// 1. 使用 @ 装饰器定义特殊属性
+// 2. 使用 ? 表示可选字段
+// 3. 使用 [] 表示数组/列表
+// 4. 使用 @relation 定义模型间关系
+// 5. 使用 @default 设置默认值
+// 6. 使用 @map 定义数据库映射
+// 7. 使用 @db 指定数据库特定类型
+// 这种写法专门为数据库模型设计，结合了：
+
+// - TypeScript 的类型系统
+// - MongoDB 的文档结构
+// - ORM 的关系映射
+// - 现代化的装饰器语法
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+// 典型的用户认证系统的数据模型设计
+model User{
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+  name String?
+  email String?@unique
+  image String?
+  hashedPassword String?  // 加密后的密码，可选字段（支持第三方登录的情况）
+  createAt DateTime @default(now())
+  updateAt DateTime @updatedAt // 更新时间，自动更新
+
+  conversationIds String[] @db.ObjectId //字符串数组存储用户所有的对话ID
+  conversations Conversation[]@relation(fields:[conversationIds],references: [id])//建立了与 Conversation 模型的多对多关系
+
+  seenMessageIds String[] @db.ObjectId  // 存储已读消息ID的数组
+  seenMessages Message[] @relation("Seen",fields:[seenMessageIds],references: [id])// 通过 "Seen" 关系名与 Message 模型关联
+
+  accounts Account[]  // 用户的账号信息
+  messages Message[]  // 用户发送的消息
+  
+}
+model Account{
+id String@id @default(auto()) @map("_id") @db.ObjectId
+userId String @db.ObjectId //指定在 MongoDB 中使用 ObjectId 类型存储
+type String
+provider String
+providerAccountId String //是普通的标识符，使用默认字符串类型即可
+refresh_token String? @db.String //可能包含较长的 token 字符串，指定在 MongoDB 中使用 String 类型存储
+access_token String @db.String
+expires_at Int?
+token_type String?
+scope String?
+id_token String @db.String
+session_state String?
+
+user User @relation(fields:[userId],references:[id],onDelete:Cascade)
+
+@@unique([provider,providerAccountId])
+}
+model Conversation{
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+  createdAt DateTime @default(now())
+  lastMessageAt DateTime @default(now())
+  name String?
+  isGroup Boolean?
+
+  messagesIds String[] @db.ObjectId
+  messages Message[]
+
+  userIds String[] @db.ObjectId
+  users User[] @relation(fields: [userIds],references:[id])
+}
+
+model Message{
+ id String @id @default(auto()) @map("_id") @db.ObjectId
+ body String?
+ image String?
+ createdAt DateTime @default(now())
+
+ seenIds String[] @db.ObjectId
+ seen User[] @relation("Seen",fields:[seenIds],references:[id])
+
+ conversationId String @db.ObjectId
+ conversation Conversation @relation(fields:[conversationId],references: [id],onDelete:Cascade)
+
+ senderId String @db.ObjectId 
+ sender User @relation(fields:[senderId],references:[id],onDelete:Cascade)
+
+ }
