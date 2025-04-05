@@ -28,7 +28,7 @@ export async function POST(request: Request) {
 
     // NextResponse.json() 是 Next.js 提供的响应助手方法，将用户对象转换为 JSON 格式返回，
     return NextResponse.json(user);
-  } catch (error: Error) {
+  } catch (error) {
     console.log(error, "REGISTER_ERROR");
     return new NextResponse("Internal Error", { status: 500 });
   }
