@@ -1,5 +1,5 @@
 "use client";
-
+import axios from "axios";
 import { useCallback, useState } from "react";
 import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
 import Input from "@/app/components/Inputs/Input";
@@ -34,10 +34,9 @@ const AuthForm = () => {
   const onSubmit: SubmitHandler<FieldValues> = (data) => {
     setIsLoading(true);
     if (variant === "REGISTER") {
-      // Axios Register
+      axios.post("/api/register", data);
     }
     if (variant === "LOGIN") {
-      // NetxAuth SignIn
     }
   };
   const socialAction = (action: string) => {
