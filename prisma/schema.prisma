@@ -47,24 +47,26 @@ model User{
   messages Message[]  // 用户发送的消息
   
 }
+
 model Account{
-id String@id @default(auto()) @map("_id") @db.ObjectId
-userId String @db.ObjectId //指定在 MongoDB 中使用 ObjectId 类型存储
-type String
-provider String
-providerAccountId String //是普通的标识符，使用默认字符串类型即可
-refresh_token String? @db.String //可能包含较长的 token 字符串，指定在 MongoDB 中使用 String 类型存储
-access_token String? @db.String
-expires_at Int?
-token_type String?
-scope String?
-id_token String? @db.String
-session_state String?
+  id String@id @default(auto()) @map("_id") @db.ObjectId
+  userId String @db.ObjectId //指定在 MongoDB 中使用 ObjectId 类型存储
+  type String
+  provider String
+  providerAccountId String //是普通的标识符，使用默认字符串类型即可
+  refresh_token String? @db.String //可能包含较长的 token 字符串，指定在 MongoDB 中使用 String 类型存储
+  access_token String? @db.String
+  expires_at Int?
+  token_type String?
+  scope String?
+  id_token String? @db.String
+  session_state String?
 
-user User @relation(fields:[userId],references:[id],onDelete:Cascade)
+  user User @relation(fields:[userId],references:[id],onDelete:Cascade)
 
-@@unique([provider,providerAccountId])
+  @@unique([provider,providerAccountId])
 }
+
 model Conversation{
   id String @id @default(auto()) @map("_id") @db.ObjectId
   createdAt DateTime @default(now())

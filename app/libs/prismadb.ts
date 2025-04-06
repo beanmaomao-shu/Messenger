@@ -4,11 +4,11 @@
 // 这是 Next.js + Prisma 项目中的常见最佳实践
 import { PrismaClient } from "@prisma/client";
 declare global {
-  let prisma: PrismaClient | undefined;
+  var prisma: PrismaClient | undefined;
 }
 // 创建 Prisma 客户端实例。如果全局已存在则复用，否则创建新实例
 const client = globalThis.prisma || new PrismaClient();
 // 在非生产环境下，将客户端实例保存到全局变量。这样在开发时的热重载不会创建多个连接
-if (process.env.ENV != "production") globalThis.prisma = client;
+if (process.env.NODE_ENV !== "production") globalThis.prisma = client;
 
 export default client;

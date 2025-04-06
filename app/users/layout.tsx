@@ -1,14 +1,20 @@
 import Sidebar from "../components/Sidebar/Sidebar";
+import getUsers from "@/app/actions/getUsers";
+import UserList from "./components/UserList";
+import { User } from "@prisma/client";
+
 export default async function UsersLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const users = (await getUsers()) as User[];
   return (
-    //TypeScript 的类型系统还不能完全处理服务器组件的特殊性质
-    // @ts-expect-error Server Component
     <Sidebar>
-      <div className="h-full">{children}</div>
+      <div className="h-full">
+        <UserList items={users} />
+        {children}
+      </div>
     </Sidebar>
   );
 }
