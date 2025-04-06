@@ -1,14 +1,15 @@
-import { useMemo } from "react";
-import { useParams } from "next/navigation";
+import { useMemo } from "react"; // React的性能优化Hook
+import { usePathname } from "next/navigation"; // Next.js的路由Hook
 import { HiChat } from "react-icons/hi";
-import { hiArrowLeftOnRectangle, HiUsers } from "react-icons/hi2";
+import { HiArrowLeftOnRectangle, HiUsers } from "react-icons/hi2";
 import { signOut } from "next-auth/react";
 
 import useConversation from "./useConversation";
 
 const useRoutes = () => {
-  const pathname = useParams();
-  const { conversationId } = useConversation();
+  const pathname = usePathname();
+  const { conversationId } = useConversation(); // 获取当前对话ID
+  //路由配置数组
   const routes = useMemo(
     () => [
       {
@@ -21,14 +22,17 @@ const useRoutes = () => {
         label: "Users",
         href: "/users",
         icon: HiUsers,
-        acitve: pathname === "/users",
+        active: pathname === "/users",
       },
       {
         label: "Logout",
         href: "#",
         onClick: () => signOut(),
+        icon: HiArrowLeftOnRectangle,
       },
     ],
     [pathname, conversationId]
   );
+  return routes;
 };
+export default useRoutes;

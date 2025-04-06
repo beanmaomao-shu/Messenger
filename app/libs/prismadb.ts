@@ -3,7 +3,6 @@
 // 3. 确保数据库连接的正确管理
 // 这是 Next.js + Prisma 项目中的常见最佳实践
 import { PrismaClient } from "@prisma/client";
-
 declare global {
   let prisma: PrismaClient | undefined;
 }

@@ -58,6 +58,7 @@ const AuthForm = () => {
         redirect: false,
       })
         .then((callback) => {
+          console.log("Auth callback:", callback);
           if (callback?.error) {
             toast.error("Something went wrong");
           }
@@ -121,7 +122,7 @@ const AuthForm = () => {
           />
           <div>
             <Button disabled={isLoading} fullWidth type="submit">
-              {variant === "LOGIN" ? "SIgn in" : "Register"}
+              {variant === "LOGIN" ? "Sign in" : "Register"}
             </Button>
           </div>
         </form>
@@ -153,7 +154,7 @@ const AuthForm = () => {
         <div className="flex gap-2 justify-center text-sm mt-6 px-2 text-gray-500">
           <div>
             {variant === "LOGIN"
-              ? "New toMessenger"
+              ? "New to Messenger"
               : "Already have an account"}
           </div>
           <div className="underline cursor-pointer" onClick={toggleVariant}>
