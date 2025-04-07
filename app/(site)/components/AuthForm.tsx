@@ -1,10 +1,11 @@
 "use client";
-import axios from "axios";
 import { useCallback, useState, useEffect } from "react";
-import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
 import Input from "@/app/components/Inputs/Input";
 import Button from "@/app/components/Button";
 import AuthSocialButton from "./AuthSocialButton";
+
+import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
+import axios from "axios";
 import { BsGithub, BsGoogle } from "react-icons/bs";
 import { toast } from "react-hot-toast";
 import { signIn, useSession } from "next-auth/react";
@@ -12,8 +13,8 @@ import { useRouter } from "next/navigation";
 
 type Variant = "LOGIN" | "REGISTER";
 const AuthForm = () => {
-  const session = useSession();
-  const router = useRouter();
+  const session = useSession(); //获取和监控用户的认证状态
+  const router = useRouter(); //编程式导航
   const [variant, setVariant] = useState<Variant>("LOGIN");
   const [isLoading, setIsLoading] = useState(false);
 
@@ -21,7 +22,7 @@ const AuthForm = () => {
     if (session?.status === "authenticated") {
       router.push("/users");
     }
-  }, [session?.status, router]);
+  }, [session?.status, router]); //所有在 Effect 中使用的响应式值都必须声明为依赖项
 
   const toggleVariant = useCallback(() => {
     if (variant === "LOGIN") {
@@ -29,7 +30,8 @@ const AuthForm = () => {
     } else {
       setVariant("LOGIN");
     }
-  }, [variant]);
+  }, [variant]); //只在 variant 变化时创建新函数
+
   //   初始化和管理表单状态
   const {
     register,
