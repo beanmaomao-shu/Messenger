@@ -1,7 +1,7 @@
-import getCurrentUser from "@/app/actions/getCurrentUser";
-import { NextResponse } from "next/server";
-import prisma from "@/app/libs/prismadb";
-
+import getCurrentUser from '@/app/actions/getCurrentUser';
+import { NextResponse } from 'next/server';
+import prisma from '@/app/libs/prismadb';
+import { pusherServer } from '@/app/libs/pusher';
 export async function POST(request: Request) {
   try {
     const currentUser = await getCurrentUser();
@@ -9,11 +9,11 @@ export async function POST(request: Request) {
     const { userId, isGroup, members, name } = body;
     // 未认证
     if (!currentUser?.id || !currentUser.email) {
-      return new NextResponse("Unauthorized", { status: 401 });
+      return new NextResponse('Unauthorized', { status: 401 });
     }
     // 群聊但不合格
     if (isGroup && (!members || members.length < 2 || !name)) {
-      return new NextResponse("Invalid data", { status: 400 });
+      return new NextResponse('Invalid data', { status: 400 });
     }
     //群聊合格
     if (isGroup) {
@@ -23,11 +23,10 @@ export async function POST(request: Request) {
           isGroup,
           users: {
             connect: [
-              // 将所有选中的成员添加到群聊中
-              ...members.map((member: { value: string }) => {
-                id: member.value;
-              }),
-              // 将当前用户也添加到群聊中
+              // 修复 members 的映射语法
+              ...members.map((member: { value: string }) => ({
+                id: member.value,
+              })),
               {
                 id: currentUser.id,
               },
@@ -37,6 +36,11 @@ export async function POST(request: Request) {
         include: {
           users: true,
         },
+      });
+      newConversation.users.forEach(user => {
+        if (user.email) {
+          pusherServer.trigger(user.email, 'conversation:new', newConversation);
+        }
       });
       return NextResponse.json(newConversation);
     }
@@ -80,8 +84,14 @@ export async function POST(request: Request) {
         users: true,
       },
     });
+    newConversation.users.map(user => {
+      if (user.email) {
+        pusherServer.trigger(user.email, 'conversation:new', newConversation);
+      }
+    });
     return NextResponse.json(newConversation);
   } catch (error) {
-    return new NextResponse("Internal Error", { status: 500 });
+    console.log(error);
+    return new NextResponse('Internal Error', { status: 500 });
   }
 }

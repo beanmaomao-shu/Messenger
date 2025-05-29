@@ -30,7 +30,7 @@ model User{
   image String?
   hashedPassword String?  // 加密后的密码，可选字段（支持第三方登录的情况）
   createAt DateTime @default(now())
-  updateAt DateTime @updatedAt // 更新时间，自动更新
+  updateAt DateTime @updatedAt
 
   conversationIds String[] @db.ObjectId //字符串数组存储用户所有的对话ID
   conversations Conversation[]@relation(fields:[conversationIds],references: [id])//建立了与 Conversation 模型的多对多关系

@@ -10,6 +10,7 @@ export type FullConversationType = Conversation & {
   users: User[];
   messages: FullMessageType[];
 };
+//?为什么需要 Full 类型：它描述了查询后返回的完整数据结构，而不仅仅是数据库中存储的ID。
 // (未经查询)@prisma/client 中的基础类型，不包含关联数据
 // type SimpleConversationType = {
 //     id: string;
